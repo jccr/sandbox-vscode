@@ -11,7 +11,7 @@
 	],
 	"activationEvents": [
 		"onFileSystem:sandbox",
-		"onCommand:extension.openSandbox"
+		"onCommand:litterbox.openSandbox"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -19,7 +19,7 @@
 			{
 				"title": "Open Sandbox",
 				"category": "Sandbox",
-				"command": "extension.openSandbox"
+				"command": "litterbox.openSandbox"
 			}
 		]
 	},
