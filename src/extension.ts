@@ -11,8 +11,10 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  function isSandboxOpen() {
-    return !!vscode.workspace.getWorkspaceFolder(vscode.Uri.parse("sandbox:/"));
+  let currentOutputPanel: vscode.WebviewPanel;
+
+  function getSandboxWorkspaceFolder() {
+    return vscode.workspace.getWorkspaceFolder(vscode.Uri.parse("sandbox:/"));
   }
 
   async function openDocumentInColumn(
@@ -20,7 +22,7 @@ export async function activate(context: vscode.ExtensionContext) {
     overwrite: boolean,
     column: vscode.ViewColumn,
     focus: boolean = false
-  ): Promise<[vscode.TextDocument, vscode.TextEditor]> {
+  ): Promise<vscode.TextDocument> {
     let uri = vscode.Uri.parse(`sandbox:/${fileName}`);
 
     try {
@@ -34,12 +36,13 @@ export async function activate(context: vscode.ExtensionContext) {
 
     let doc = await vscode.workspace.openTextDocument(uri);
 
-    let editor = await vscode.window.showTextDocument(doc, {
+    await vscode.window.showTextDocument(doc, {
       preview: false,
       viewColumn: column,
       preserveFocus: !focus
     });
-    return [doc, editor];
+
+    return doc;
   }
 
   async function prepareWorkspace(overwrite: boolean) {
@@ -49,31 +52,31 @@ export async function activate(context: vscode.ExtensionContext) {
       groups: [{ groups: [{}, {}], size: 0.5 }, { groups: [{}, {}], size: 0.5 }]
     });
 
-    const [docHTML, editorHTML] = await openDocumentInColumn(
+    const docHTML = await openDocumentInColumn(
       "index.html",
       overwrite,
       vscode.ViewColumn.One
     );
-    const [docJS, editorJS] = await openDocumentInColumn(
+    const docJS = await openDocumentInColumn(
       "script.js",
       overwrite,
       vscode.ViewColumn.Two,
       true
     );
-    const [docCSS, editorCSS] = await openDocumentInColumn(
+    const docCSS = await openDocumentInColumn(
       "style.css",
       overwrite,
       vscode.ViewColumn.Three
     );
 
-    const outputPanel = vscode.window.createWebviewPanel(
+    currentOutputPanel = vscode.window.createWebviewPanel(
       "sandboxOutput",
       "Output",
       { viewColumn: vscode.ViewColumn.Four, preserveFocus: true },
       { enableScripts: true }
     );
 
-    const htmlView = new HTMLView(outputPanel.webview, context);
+    const htmlView = new HTMLView(currentOutputPanel.webview, context);
 
     context.subscriptions.push(
       vscode.workspace.onDidChangeTextDocument(
@@ -96,13 +99,13 @@ export async function activate(context: vscode.ExtensionContext) {
     htmlView.css = docCSS.getText();
   }
 
-  if (isSandboxOpen()) {
+  if (getSandboxWorkspaceFolder()) {
     await prepareWorkspace(true);
   }
 
   context.subscriptions.push(
     vscode.commands.registerCommand("sandbox.newSandbox", async () => {
-      if (isSandboxOpen()) {
+      if (getSandboxWorkspaceFolder()) {
         const option = await vscode.window.showWarningMessage(
           "You have an active sandbox. What would you like to do?",
           { modal: true },
@@ -134,14 +137,42 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("sandbox.reopenEditors", async () => {
-      if (!isSandboxOpen()) {
+      if (!getSandboxWorkspaceFolder()) {
         vscode.window.showInformationMessage(
-          "You need a sandbox to reopen the editors."
+          "There is currently no sandbox opened to reopen editors for."
         );
         return;
       }
 
       await prepareWorkspace(false);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("sandbox.closeSandbox", async () => {
+      const workspaceFolder = getSandboxWorkspaceFolder();
+      if (!workspaceFolder) {
+        vscode.window.showInformationMessage(
+          "There is currently no sandbox opened in this instance to close."
+        );
+        return;
+      }
+
+      vscode.workspace.updateWorkspaceFolders(workspaceFolder.index, 1);
+
+      for (const editor of vscode.window.visibleTextEditors) {
+        if (editor.document.uri.scheme === "sandbox") {
+          if (editor.hide) {
+            // I know this is deprecated but there's really no alternative right now.
+            // See: https://github.com/microsoft/vscode/issues/15178
+            editor.hide();
+          } else {
+            throw new Error("Unable to close sandbox owned editors");
+          }
+        }
+      }
+
+      currentOutputPanel.dispose();
     })
   );
 }
