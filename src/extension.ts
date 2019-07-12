@@ -1,5 +1,7 @@
 import * as vscode from "vscode";
 import { MemFS } from "./fileSystemProvider";
+import { debounce } from "./debounce";
+import { HTMLView } from "./htmlView";
 
 export async function activate(context: vscode.ExtensionContext) {
   const memFs = new MemFS();
@@ -13,7 +15,7 @@ export async function activate(context: vscode.ExtensionContext) {
     fileName: string,
     column: vscode.ViewColumn,
     focus: boolean = false
-  ): Promise<vscode.TextDocument> {
+  ): Promise<[vscode.TextDocument, vscode.TextEditor]> {
     let uri = vscode.Uri.parse(`sandbox:/${fileName}`);
 
     memFs.writeFile(uri, new Uint8Array(0), {
@@ -23,12 +25,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
     let doc = await vscode.workspace.openTextDocument(uri);
 
-    await vscode.window.showTextDocument(doc, {
+    let editor = await vscode.window.showTextDocument(doc, {
       preview: false,
       viewColumn: column,
       preserveFocus: !focus
     });
-    return doc;
+    return [doc, editor];
   }
 
   async function prepareWorkspace() {
@@ -38,16 +40,16 @@ export async function activate(context: vscode.ExtensionContext) {
       groups: [{ groups: [{}, {}], size: 0.5 }, { groups: [{}, {}], size: 0.5 }]
     });
 
-    const docHTML = await openDocumentInColumn(
+    const [docHTML, editorHTML] = await openDocumentInColumn(
       "index.html",
       vscode.ViewColumn.One
     );
-    const docJS = await openDocumentInColumn(
+    const [docJS, editorJS] = await openDocumentInColumn(
       "script.js",
       vscode.ViewColumn.Two,
       true
     );
-    const docCSS = await openDocumentInColumn(
+    const [docCSS, editorCSS] = await openDocumentInColumn(
       "style.css",
       vscode.ViewColumn.Three
     );
@@ -56,7 +58,25 @@ export async function activate(context: vscode.ExtensionContext) {
       "sandboxOutput",
       "Output",
       { viewColumn: vscode.ViewColumn.Four, preserveFocus: true },
-      {}
+      { enableScripts: true }
+    );
+    
+    const htmlView = new HTMLView(outputPanel.webview, context);
+
+    context.subscriptions.push(
+      vscode.workspace.onDidChangeTextDocument(
+        debounce(e => {
+          if (e.document === docHTML) {
+            htmlView.html = docHTML.getText();
+          }
+          if (e.document === docCSS) {
+            htmlView.css = docCSS.getText();
+          }
+          if (e.document === docJS) {
+            htmlView.js = docJS.getText();
+          }
+        }, 750)
+      )
     );
   }
 
