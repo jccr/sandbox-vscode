@@ -4,6 +4,8 @@ Test your snippets of JavaScript, HTML, and CSS!
 
 Easily, instantly, and all within your familiar VS Code environment.
 
+![Sandbox in action](assets/demo.gif)
+
 ## Features
 
 ### Live Code Playground

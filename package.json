@@ -3,8 +3,17 @@
   "displayName": "Sandbox",
   "description": "Instantly test snippets of JS/HTML/CSS using VS Code.",
   "version": "1.0.0",
-  "engines": {
-    "vscode": "^1.36.0"
+  "author": {
+    "name": "Juan Carlos Corona Romero <c@rlos.email> (https://jccr.dev/)"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/jccr/sandbox-vscode",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jccr/sandbox-vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/jccr/sandbox-vscode/issues"
   },
   "categories": [
     "Debuggers",
@@ -17,6 +26,9 @@
     "repl",
     "javascript"
   ],
+  "engines": {
+    "vscode": "^1.36.0"
+  },
   "activationEvents": [
     "onFileSystem:sandbox",
     "onCommand:sandbox.newSandbox"
