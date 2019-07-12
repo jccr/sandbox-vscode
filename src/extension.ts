@@ -60,7 +60,7 @@ export async function activate(context: vscode.ExtensionContext) {
       { viewColumn: vscode.ViewColumn.Four, preserveFocus: true },
       { enableScripts: true }
     );
-    
+
     const htmlView = new HTMLView(outputPanel.webview, context);
 
     context.subscriptions.push(
@@ -85,7 +85,7 @@ export async function activate(context: vscode.ExtensionContext) {
   }
 
   let disposable = vscode.commands.registerCommand(
-    "litterbox.openSandbox",
+    "sandbox.newSandbox",
     async () => {
       if (vscode.workspace.getWorkspaceFolder(vscode.Uri.parse("sandbox:/"))) {
         return;

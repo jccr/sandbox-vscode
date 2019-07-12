@@ -1,25 +1,33 @@
 {
-  "name": "litterbox",
-  "displayName": "litterbox",
-  "description": "",
-  "version": "0.0.1",
+  "name": "sandbox",
+  "displayName": "Sandbox",
+  "description": "Instantly test snippets of JS/HTML/CSS using VS Code.",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.36.0"
   },
   "categories": [
+    "Debuggers",
     "Other"
+  ],
+  "keywords": [
+    "playground",
+    "sandbox",
+    "scratchpad",
+    "repl",
+    "javascript"
   ],
   "activationEvents": [
     "onFileSystem:sandbox",
-    "onCommand:litterbox.openSandbox"
+    "onCommand:sandbox.newSandbox"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "title": "Open Sandbox",
+        "title": "New Sandbox",
         "category": "Sandbox",
-        "command": "litterbox.openSandbox"
+        "command": "sandbox.newSandbox"
       }
     ]
   },
