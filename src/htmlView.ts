@@ -103,11 +103,13 @@ export class HTMLView {
     document.head.prepend(init);
 
     const style = document.createElement("style");
-    style.textContent = this._css.length
-      ? this._css
-      : "html{background-color:white;}";
+    style.textContent = this._css;
     style.id = styleId;
     document.head.prepend(style);
+
+    const defaultStyle = document.createElement("style");
+    defaultStyle.textContent = "html{background-color:white;}";
+    document.head.prepend(defaultStyle);
 
     const script = document.createElement("script");
     script.textContent = this._js + "\n//# sourceURL=script.js";

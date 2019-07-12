@@ -31,7 +31,8 @@
   },
   "activationEvents": [
     "onFileSystem:sandbox",
-    "onCommand:sandbox.newSandbox"
+    "onCommand:sandbox.newSandbox",
+    "onCommand:sandbox.reopenEditors"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -40,6 +41,11 @@
         "title": "New Sandbox",
         "category": "Sandbox",
         "command": "sandbox.newSandbox"
+      },
+      {
+        "title": "Reopen Editors",
+        "category": "Sandbox",
+        "command": "sandbox.reopenEditors"
       }
     ]
   },
