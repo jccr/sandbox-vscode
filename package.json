@@ -26,6 +26,8 @@
     "repl",
     "javascript"
   ],
+  "publisher": "jccr",
+  "icon": "assets/icon-256.png",
   "engines": {
     "vscode": "^1.36.0"
   },
