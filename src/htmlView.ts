@@ -108,7 +108,7 @@ export class HTMLView {
     document.head.prepend(style);
 
     const defaultStyle = document.createElement("style");
-    defaultStyle.textContent = "html{background-color:white;}";
+    defaultStyle.textContent = "body{background-color:white;}";
     document.head.prepend(defaultStyle);
 
     const script = document.createElement("script");

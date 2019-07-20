@@ -54,3 +54,8 @@ In the Explorer view, using the "Download" context menu item on the workspace fo
 ### 1.0.0
 
 Initial release of Sandbox!
+
+### 1.0.1
+
+Change default styles to not conflict with user's `body` `background` styling.
+ 
