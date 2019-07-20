@@ -2,7 +2,7 @@
   "name": "sandbox",
   "displayName": "Sandbox",
   "description": "Instantly test snippets of JS/HTML/CSS using VS Code.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Juan Carlos Corona Romero <c@rlos.email> (https://jccr.dev/)"
   },
