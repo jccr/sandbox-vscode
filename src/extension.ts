@@ -104,7 +104,7 @@ export async function activate(context: vscode.ExtensionContext) {
   }
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("sandbox.newSandbox", async () => {
+    vscode.commands.registerCommand("sandbox.newSandbox", async (openAsFolder) => {
       if (getSandboxWorkspaceFolder()) {
         const option = await vscode.window.showWarningMessage(
           "You have an active sandbox. What would you like to do?",
@@ -122,16 +122,22 @@ export async function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      vscode.workspace.updateWorkspaceFolders(
-        vscode.workspace.workspaceFolders
-          ? vscode.workspace.workspaceFolders.length
-          : 0,
-        null,
-        {
-          uri: vscode.Uri.parse("sandbox:/"),
-          name: "Sandbox"
-        }
-      );
+      const uri = vscode.Uri.parse("sandbox:/");
+
+      if (openAsFolder) {
+        await vscode.commands.executeCommand("vscode.openFolder", uri);
+      } else {
+        vscode.workspace.updateWorkspaceFolders(
+          vscode.workspace.workspaceFolders
+            ? vscode.workspace.workspaceFolders.length
+            : 0,
+          null,
+          {
+            uri,
+            name: "Sandbox",
+          }
+        );
+      }
     })
   );
 
